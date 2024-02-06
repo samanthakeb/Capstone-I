@@ -1,0 +1,320 @@
+
+```{r}
+life_expectancy <-  read.csv('C:\\Users\\saman\\OneDrive\\Documents\\Coding Temple Work\\lifeexpectancy.csv')
+
+print(life_expectancy)
+```
+```{r}
+install.packages(c("dplyr", "ggplot2"))
+library(dplyr)
+library(ggplot2)
+
+average_female_life_expectancy <- life_expectancy %>%
+  group_by(Year) %>%
+  summarise(Average_Female_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+ggplot(average_female_life_expectancy, aes(x = Year, y = Average_Female_Life_Expectancy)) +
+  geom_line() +
+  labs(title = "Average Global Female Life Expectancy Over the Years",
+       x = "Year",
+       y = "Average Female Life Expectancy")
+
+```
+```{r}
+average_male_life_expectancy <- life_expectancy %>%
+  group_by(Year) %>%
+  summarise(Average_Male_Life_Expectancy = mean(Male.Life.Expectancy, na.rm = TRUE))
+
+ggplot(average_male_life_expectancy, aes(x = Year, y = Average_Male_Life_Expectancy)) +
+  geom_line() +
+  labs(title = "Average Global Male Life Expectancy Over the Years",
+       x = "Year",
+       y = "Average Male Life Expectancy")
+```
+```{r}
+total_global_population <- life_expectancy %>%
+  group_by(Year) %>%
+  summarise(Total_Population = sum(Population, na.rm = TRUE))
+
+ggplot(total_global_population, aes(x = Year, y = Total_Population)) +
+  geom_line() +
+  labs(title = "Global Population Trends Over the Years",
+       x = "Year",
+       y = "Total Population")
+```
+
+```{r}
+selected_countries <- c("Albania", "Algeria", "Andorra", "Argentina", "Australia", "Austria", "Bahamas", "Bahrain", "Belgium", "Bhutan", "Botswana", "Brazil", "Bulgaria", "Burkina Faso", "Canada", "Chile", "China", "Colombia", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Egypt", "Finland", "France", "French Polynesia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Guadeloupe", "Hong Kong", "Iceland", "India", "Indonesia", "Ireland", "Israel", "Italy", "Japan", "Kuwait", "Liechtenstein", "Luxembourg", "Macao", "Malaysia", "Maldives","Malta", "Martinique", "Mauritius", "Mexico", "Monaco", "Morocco", "Netherlands", "New Zealand", "North Korea", "Norway", "Pakistan", "Peru", "Phillipines", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "San Marino", "Serbia", "Seychelles", "Singapore", "South Africa", "South Korea", "Spain", "Sri Lanka", "Suriname", "Sweden", "Switzerland", "Taiwan", "Thailand", "Trinidad and Tobago", "Tunisia", "Turkey", "United Kingdom", "Vatican")
+
+universal_healthcare_data <- life_expectancy %>%
+  filter(Country %in% selected_countries)
+
+print(universal_healthcare_data)
+```
+
+
+```{r}
+life_expectancy <- life_expectancy %>%
+  mutate(Universal.Healthcare = Country %in% universal_healthcare_data$Country)
+
+print(life_expectancy)
+```
+```{r}
+females_with_uh <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == TRUE)
+
+female_average_uh <- females_with_uh %>%
+  group_by(Year) %>%
+  summarise(Average_Female_Life_Expectancy_UH = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+print(female_average_uh)
+
+ggplot(female_average_uh, aes(x = Year, y = Average_Female_Life_Expectancy_UH)) +
+  geom_line() +
+  labs(title = "Average Female Life Expectancy in Countries with Universal Healthcare 2000-2020",
+       x = "Year",
+       y = "Average Female Life Expectancy")
+```
+```{r}
+females_without_uh <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE)
+
+female_average <- females_without_uh %>%
+  group_by(Year) %>%
+  summarise(Average_Female_Life_Expectancy_No_UH = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+print(female_average)
+
+ggplot(female_average, aes(x = Year, y = Average_Female_Life_Expectancy_No_UH)) +
+  geom_line() +
+  labs(title = "Average Females Life Expectancy in Countries without Universal Healthcare 2000-2020",
+      x = "Year",
+      y = "Average Female Life Expectancy")
+```
+
+```{r}
+males_with_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == TRUE)
+
+male_average_with_UH <- males_with_UH %>%
+  group_by(Year) %>%
+  summarize(Average_Male_Life_Expectancy_With_UH = mean(Male.Life.Expectancy, na.rm = TRUE))
+
+print(male_average_with_UH)
+
+ggplot(male_average_with_UH, aes(x = Year, y = Average_Male_Life_Expectancy_With_UH)) +
+  geom_line() +
+  labs(title = "Average Male Life Expectancy in Countries with Universal Healthcare (2000-2020)",
+       x = "Year",
+       y = "Average Male Life Expectancy")
+```
+```{r}
+males_no_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE)
+
+male_average_no_UH <- males_no_UH %>%
+  group_by(Year) %>%
+  summarize(Average_Male_Life_Expectancy_No_UH = mean(Male.Life.Expectancy, na.rm = TRUE))
+
+print(male_average_no_UH)
+
+ggplot(male_average_no_UH, aes(x = Year, y = Average_Male_Life_Expectancy_No_UH)) +
+  geom_line() +
+  labs(title = "Average Male Life Expectancy in Countries without Universal Healthcare (2000-2020)",
+       x = "Year",
+       y = "Average Male Life Expectancy")
+```
+
+The country Burkina Faso has the lowest life expectancy of any country with Universal Healthcare for both males and females. However, it is worth noting that this countries free healthcare is only available to pregnant women and children under 5. 
+
+```{r}
+female_lowest_with_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == TRUE)
+
+female_lowest_average_with_UH <- female_lowest_with_UH %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+female_lowest_country_with_UH <- female_lowest_average_with_UH %>%
+  slice_min(order_by = Average_Life_Expectancy)
+
+print(female_lowest_country_with_UH)
+```
+```{r}
+burkina_faso_female_life_expectancy <- life_expectancy %>%
+  filter(Country == "Burkina Faso" & Year >= 2015 & Year <= 2020)
+
+average_life_expectancy <- burkina_faso_female_life_expectancy %>%
+  group_by(Year) %>%
+  summarize(Average_Female_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+print(average_life_expectancy)
+```
+
+```{r}
+female_lowest_average_with_UH <- female_lowest_with_UH %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+second_lowest_country_with_UH <- female_lowest_average_with_UH %>%
+  slice(order(Average_Life_Expectancy)[2])
+
+print(second_lowest_country_with_UH)
+```
+```{r}
+female_lowest_average_with_UH <- female_lowest_with_UH %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+third_lowest_country_with_UH <- female_lowest_average_with_UH %>%
+  slice_min(order_by = Average_Life_Expectancy, n = 3)
+
+print(third_lowest_country_with_UH)
+```
+
+
+```{r}
+male_lowest_with_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == TRUE)
+
+male_lowest_average_with_UH <- male_lowest_with_UH %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Male.Life.Expectancy, na.rm = TRUE))
+
+male_lowest_country_with_UH <- male_lowest_average_with_UH %>%
+  slice_min(order_by = Average_Life_Expectancy)
+
+print(male_lowest_country_with_UH)
+```
+```{r}
+male_lowest_with_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == TRUE) %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Male.Life.Expectancy, na.rm = TRUE))
+
+male_lowest_with_UH <- male_lowest_with_UH[order(male_lowest_with_UH$Average_Life_Expectancy), ]
+
+head(male_lowest_with_UH, 3)
+```
+
+```{r}
+burkina_faso_population <- life_expectancy %>%
+  filter(Country == "Burkina Faso" & Year >= 2000 & Year <= 2020)
+
+ggplot(burkina_faso_population, aes(x = Year, y = Population)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(title = "Population in Burkina Faso (2000-2020)",
+       x = "Year",
+       y = "Population") +
+  theme_minimal()
+```
+
+Lesotho has the lowest life expectancy in countries without any sort of Universal Healthcare for both males and females. Upon researching it seems that the main causes of this are high rates of HIV/AIDS and poor access to healthcare.
+
+```{r}
+female_lowest_no_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE)
+
+female_lowest_average_no_UH <- female_lowest_no_UH %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+female_lowest_country_no_UH <- female_lowest_average_no_UH %>%
+  slice_min(order_by = Average_Life_Expectancy)
+
+print(female_lowest_country_no_UH)
+
+```
+```{r}
+female_lowest_no_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE) %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE))
+
+female_lowest_no_UH <- female_lowest_no_UH[order(female_lowest_no_UH$Average_Life_Expectancy), ]
+
+head(female_lowest_no_UH, 3)
+```
+
+```{r}
+male_lowest_no_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE)
+
+male_lowest_average_no_UH <- male_lowest_no_UH %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Male.Life.Expectancy, na.rm = TRUE))
+
+male_lowest_country_no_UH <- male_lowest_average_no_UH %>%
+  slice_min(order_by = Average_Life_Expectancy)
+
+print(male_lowest_country_no_UH)
+```
+```{r}
+male_lowest_no_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE) %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Male.Life.Expectancy, na.rm = TRUE)) %>%
+  arrange(Average_Life_Expectancy) %>%
+  head(3)
+
+print(male_lowest_no_UH)
+
+```
+
+```{r}
+lesotho_population <- life_expectancy %>%
+  filter(Country == "Lesotho" & Year >= 2000 & Year <= 2020)
+
+ggplot(lesotho_population, aes(x = Year, y = Population)) +
+  geom_line() +
+  labs(title = "Population Trend in Lesotho (2000-2020)",
+       x = "Year",
+       y = "Population")
+```
+
+Monaco has the highest average life expectancy for both males and females. All citizens working in Monaco are automatically covered by Monaco's Social Security system which gives them free or very affordable healthcare.
+```{r}
+female_highest_with_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == TRUE) %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE)) %>%
+  arrange(desc(Average_Life_Expectancy)) %>%
+  head(3)
+
+print(female_highest_with_UH)
+
+```
+
+```{r}
+male_highest_with_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == TRUE) %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Male.Life.Expectancy, na.rm = TRUE)) %>%
+  arrange(desc(Average_Life_Expectancy)) %>%
+  head(3)
+
+print(male_highest_with_UH)
+```
+
+```{r}
+female_highest_no_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE) %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Female.Life.Expectancy, na.rm = TRUE)) %>%
+  arrange(desc(Average_Life_Expectancy)) %>%
+  head(3)
+
+print(female_highest_no_UH)
+
+```
+```{r}
+male_highest_no_UH <- life_expectancy %>%
+  filter(Year >= 2000 & Year <= 2020 & Universal.Healthcare == FALSE) %>%
+  group_by(Country) %>%
+  summarize(Average_Life_Expectancy = mean(Male.Life.Expectancy, na.rm = TRUE)) %>%
+  arrange(desc(Average_Life_Expectancy)) %>%
+  head(3)
+
+print(male_highest_no_UH)
+```
+
